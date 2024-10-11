@@ -30,44 +30,45 @@ def fetch_data(url):
 # Parse the alert message to extract the event type and predicted storm level
 def parse_alert_message(alert):
     # Split the alert message into lines for easier parsing
-    lines = alert.split('\r\n')
+    lines = alert.split("\r\n")
     event_type = None
     predicted_level = None
     active_warning = False
 
     for line in lines:
         line = line.strip()
+
         # Determine the event type and set active_warning accordingly
-        if 'ALERT' in line:
-            event_type = 'ALERT'
+        if "ALERT" in line:
+            event_type = "ALERT"
             active_warning = True  # Set active_warning to True for ALERT
-        elif 'WARNING' in line:
-            event_type = 'WARNING'
+        elif "WARNING" in line:
+            event_type = "WARNING"
             active_warning = True  # Set active_warning to True for WARNING
-        elif 'WATCH' in line:
-            event_type = 'WATCH'
+        elif "WATCH" in line:
+            event_type = "WATCH"
             active_warning = True  # Set active_warning to True for WATCH
-        elif 'SUMMARY' in line:
-            event_type = 'SUMMARY'
+        elif "SUMMARY" in line:
+            event_type = "SUMMARY"
             # Decide if SUMMARY should set active_warning (currently left as False)
 
         # Extract predicted storm level from 'NOAA Scale: ' line
-        if line.startswith('NOAA Scale: '):
-            predicted_level = line[len('NOAA Scale: '):].strip()
+        if line.startswith("NOAA Scale: "):
+            predicted_level = line[len("NOAA Scale: "):].strip()
 
         # For WATCH messages, extract predicted level differently
-        if event_type == 'WATCH' and 'WATCH:' in line:
-            idx = line.find('Geomagnetic Storm Category ')
+        if event_type == "WATCH" and "WATCH:" in line:
+            idx = line.find("Geomagnetic Storm Category ")
             if idx != -1:
-                start = idx + len('Geomagnetic Storm Category ')
-                end = line.find(' Predicted', start)
+                start = idx + len("Geomagnetic Storm Category ")
+                end = line.find(" Predicted", start)
                 if end != -1:
                     predicted_level = line[start:end].strip()
                 else:
                     predicted_level = line[start:].strip()
             else:
                 # In case 'Geomagnetic Storm Category' is not found
-                predicted_level = line.replace('WATCH:', '').strip()
+                predicted_level = line.replace("WATCH:", "").strip()
 
     # Format the output based on whether there's an active warning
     if active_warning:
